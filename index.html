@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio Digital - Universidad Técnica de Ambato</title>
+    <!-- Importar fuentes llamativas de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Lobster&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos adicionales para los campos de enlace */
+        .url-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .url-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .add-url-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .add-url-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .url-list {
+            margin-top: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 10px;
+            display: none;
+        }
+        
+        .url-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            background-color: white;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .url-name {
+            flex: 1;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
+        .url-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .url-delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .url-delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        /* Ajustes para las secciones existentes */
+        .upload-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .toggle-url-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .toggle-url-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        /* Nuevos estilos para miniaturas */
+        .thumbnail-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .thumbnail-item {
+            width: 200px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            border: 1px solid #ddd;
+        }
+        
+        .thumbnail-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .thumbnail-preview {
+            height: 150px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .thumbnail-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: none; /* Evita interacción en la miniatura */
+        }
+        
+        .thumbnail-icon {
+            font-size: 48px;
+            color: #666;
+        }
+        
+        .thumbnail-info {
+            padding: 12px;
+        }
+        
+        .thumbnail-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .thumbnail-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .thumbnail-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .thumbnail-view-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .thumbnail-view-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .thumbnail-download-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .thumbnail-download-btn:hover {
+            background-color: #45a049;
+        }
+        
+        /* Modal mejorado */
+        .modal-body {
+            padding: 0;
+        }
+        
+        .preview-container {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+        }
+        
+        #previewFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .preview-message {
+            text-align: center;
+            padding: 40px;
+            background: #f9f9f9;
+        }
+        
+        .preview-message i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .preview-message h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .preview-message p {
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        /* Estilos para las instrucciones */
+        .instructions {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions h4 {
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .instructions-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .instructions-content ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions-content li {
+            margin-bottom: 8px;
+        }
+        
+        /* Contador de documentos */
+        .doc-count {
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mariposas volando -->
+    <div class="butterfly"></div>
+    <div class="butterfly"></div>
+    <div class="butterfly"></div>
+    <div class="butterfly"></div>
+    <div class="butterfly"></div>
+    <div class="butterfly"></div>
+    <div class="butterfly"></div>
+    <div class="butterfly"></div>
+
+    <div class="container">
+        <!-- Encabezado -->
+        <div class="header">
+            <div class="header-icon">👩‍🎓</div>
+            <h1>UNIVERSIDAD TÉCNICA DE AMBATO</h1>
+            <h2>FACULTAD DE CONTABILIDAD Y AUDITORÍA</h2>
+            <h3>PORTAFOLIO DIGITAL</h3>
+        </div>
+
+        <!-- Sección 1 -->
+        <div class="section section1">
+            <div class="section-title">
+                <h4>1. MATERIA <span class="doc-count" id="count1">0</span></h4>
+                <button class="toggle-url-btn" onclick="toggleUrlInput(1)">Agregar desde Google Drive</button>
+            </div>
+            <div class="url-input-container" id="urlInput1" style="display: none;">
+                <input type="url" class="url-input" id="url1" placeholder="https://drive.google.com/file/d/.../view" pattern="https://.*">
+                <button class="add-url-btn" onclick="addGoogleDriveUrl(1)">Agregar Enlace</button>
+            </div>
+            <div class="upload-controls">
+                <button class="preview-btn" onclick="toggleFileList(1)">Vista Previa</button>
+            </div>
+            <div class="url-list" id="urlList1"></div>
+            <div class="file-list" id="list1" style="display: none;">
+                <h5>Documentos subidos:</h5>
+                <div class="thumbnail-container" id="thumbnails1"></div>
+            </div>
+        </div>
+
+        <!-- Sección 2 -->
+        <div class="section section2">
+            <div class="section-title">
+                <h4>2. EXÁMENES <span class="doc-count" id="count2">0</span></h4>
+                <button class="toggle-url-btn" onclick="toggleUrlInput(2)">Agregar desde Google Drive</button>
+            </div>
+            <div class="url-input-container" id="urlInput2" style="display: none;">
+                <input type="url" class="url-input" id="url2" placeholder="https://drive.google.com/file/d/.../view" pattern="https://.*">
+                <button class="add-url-btn" onclick="addGoogleDriveUrl(2)">Agregar Enlace</button>
+            </div>
+            <div class="upload-controls">
+                <button class="preview-btn" onclick="toggleFileList(2)">Vista Previa</button>
+            </div>
+            <div class="url-list" id="urlList2"></div>
+            <div class="file-list" id="list2" style="display: none;">
+                <h5>Documentos subidos:</h5>
+                <div class="thumbnail-container" id="thumbnails2"></div>
+            </div>
+        </div>
+
+        <!-- Sección 3 -->
+        <div class="section section3">
+            <div class="section-title">
+                <h4>3. APE <span class="doc-count" id="count3">0</span></h4>
+                <button class="toggle-url-btn" onclick="toggleUrlInput(3)">Agregar desde Google Drive</button>
+            </div>
+            <div class="url-input-container" id="urlInput3" style="display: none;">
+                <input type="url" class="url-input" id="url3" placeholder="https://drive.google.com/file/d/.../view" pattern="https://.*">
+                <button class="add-url-btn" onclick="addGoogleDriveUrl(3)">Agregar Enlace</button>
+            </div>
+            <div class="upload-controls">
+                <button class="preview-btn" onclick="toggleFileList(3)">Vista Previa</button>
+            </div>
+            <div class="url-list" id="urlList3"></div>
+            <div class="file-list" id="list3" style="display: none;">
+                <h5>Documentos subidos:</h5>
+                <div class="thumbnail-container" id="thumbnails3"></div>
+            </div>
+        </div>
+
+        <!-- Sección 4 -->
+        <div class="section section4">
+            <div class="section-title">
+                <h4>4. DEBERES <span class="doc-count" id="count4">0</span></h4>
+                <button class="toggle-url-btn" onclick="toggleUrlInput(4)">Agregar desde Google Drive</button>
+            </div>
+            <div class="url-input-container" id="urlInput4" style="display: none;">
+                <input type="url" class="url-input" id="url4" placeholder="https://drive.google.com/file/d/.../view" pattern="https://.*">
+                <button class="add-url-btn" onclick="addGoogleDriveUrl(4)">Agregar Enlace</button>
+            </div>
+            <div class="upload-controls">
+                <button class="preview-btn" onclick="toggleFileList(4)">Vista Previa</button>
+            </div>
+            <div class="url-list" id="urlList4"></div>
+            <div class="file-list" id="list4" style="display: none;">
+                <h5>Documentos subidos:</h5>
+                <div class="thumbnail-container" id="thumbnails4"></div>
+            </div>
+        </div>
+
+        <!-- Sección 6 -->
+        <div class="section section6">
+            <div class="section-title">
+                <h4>5. CONSULTAS A COMPUTADORA <span class="doc-count" id="count6">0</span></h4>
+                <button class="toggle-url-btn" onclick="toggleUrlInput(6)">Agregar desde Google Drive</button>
+            </div>
+            <div class="url-input-container" id="urlInput6" style="display: none;">
+                <input type="url" class="url-input" id="url6" placeholder="https://drive.google.com/file/d/.../view" pattern="https://.*">
+                <button class="add-url-btn" onclick="addGoogleDriveUrl(6)">Agregar Enlace</button>
+            </div>
+            <div class="upload-controls">
+                <button class="preview-btn" onclick="toggleFileList(6)">Vista Previa</button>
+            </div>
+            <div class="url-list" id="urlList6"></div>
+            <div class="file-list" id="list6" style="display: none;">
+                <h5>Documentos subidos:</h5>
+                <div class="thumbnail-container" id="thumbnails6"></div>
+            </div>
+        </div>
+
+        <!-- Sección 7 -->
+        <div class="section section7">
+            <div class="section-title">
+                <h4>6. EKOS <span class="doc-count" id="count7">0</span></h4>
+                <button class="toggle-url-btn" onclick="toggleUrlInput(7)">Agregar desde Google Drive</button>
+            </div>
+            <div class="url-input-container" id="urlInput7" style="display: none;">
+                <input type="url" class="url-input" id="url7" placeholder="https://drive.google.com/file/d/.../view" pattern="https://.*">
+                <button class="add-url-btn" onclick="addGoogleDriveUrl(7)">Agregar Enlace</button>
+            </div>
+            <div class="upload-controls">
+                <button class="preview-btn" onclick="toggleFileList(7)">Vista Previa</button>
+            </div>
+            <div class="url-list" id="urlList7"></div>
+            <div class="file-list" id="list7" style="display: none;">
+                <h5>Documentos subidos:</h5>
+                <div class="thumbnail-container" id="thumbnails7"></div>
+            </div>
+        </div>
+
+        <!-- Sección 8 -->
+        <div class="section section8">
+            <div class="section-title">
+                <h4>7. LECTURA CRÍTICA DE MATEMÁTICAS <span class="doc-count" id="count8">0</span></h4>
+                <button class="toggle-url-btn" onclick="toggleUrlInput(8)">Agregar desde Google Drive</button>
+            </div>
+            <div class="url-input-container" id="urlInput8" style="display: none;">
+                <input type="url" class="url-input" id="url8" placeholder="https://drive.google.com/file/d/.../view" pattern="https://.*">
+                <button class="add-url-btn" onclick="addGoogleDriveUrl(8)">Agregar Enlace</button>
+            </div>
+            <div class="upload-controls">
+                <button class="preview-btn" onclick="toggleFileList(8)">Vista Previa</button>
+            </div>
+            <div class="url-list" id="urlList8"></div>
+            <div class="file-list" id="list8" style="display: none;">
+                <h5>Documentos subidos:</h5>
+                <div class="thumbnail-container" id="thumbnails8"></div>
+            </div>
+        </div>
+
+        <!-- Sección 9 -->
+        <div class="section section9">
+            <div class="section-title">
+                <h4>8. ANEXOS <span class="doc-count" id="count9">0</span></h4>
+                <button class="toggle-url-btn" onclick="toggleUrlInput(9)">Agregar desde Google Drive</button>
+            </div>
+            <div class="url-input-container" id="urlInput9" style="display: none;">
+                <input type="url" class="url-input" id="url9" placeholder="https://drive.google.com/file/d/.../view" pattern="https://.*">
+                <button class="add-url-btn" onclick="addGoogleDriveUrl(9)">Agregar Enlace</button>
+            </div>
+            <div class="upload-controls">
+                <button class="preview-btn" onclick="toggleFileList(9)">Vista Previa</button>
+            </div>
+            <div class="url-list" id="urlList9"></div>
+            <div class="file-list" id="list9" style="display: none;">
+                <h5>Documentos subidos:</h5>
+                <div class="thumbnail-container" id="thumbnails9"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para vista previa ampliada -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="modalTitle">Vista Previa del Documento</h4>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="previewContent">
+                    <div class="preview-container">
+                        <iframe id="previewFrame"></iframe>
+                        <div id="previewMessage" class="preview-message" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Almacenamiento de enlaces por sección
+        const driveLinks = {
+            1: [], 2: [], 3: [], 4: [], 6: [], 7: [], 8: [], 9: []
+        };
+
+        // Función para alternar la visibilidad del campo de URL
+        function toggleUrlInput(section) {
+            const urlInput = document.getElementById(`urlInput${section}`);
+            urlInput.style.display = urlInput.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        // Función para extraer información del enlace de Google Drive
+        function extractDriveInfo(url) {
+            try {
+                const urlObj = new URL(url);
+                const path = urlObj.pathname;
+                
+                // Extraer ID del archivo (diferentes formatos de enlace)
+                let fileId = '';
+                let fileName = '';
+                
+                if (url.includes('/file/d/')) {
+                    // Formato: https://drive.google.com/file/d/FILE_ID/view
+                    const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                    if (match) fileId = match[1];
+                } else if (url.includes('id=')) {
+                    // Formato: https://drive.google.com/open?id=FILE_ID
+                    const match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                    if (match) fileId = match[1];
+                }
+                
+                if (!fileId) {
+                    return { error: "No se pudo extraer el ID del archivo del enlace" };
+                }
+                
+                // Generar enlaces
+                const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                
+                // Para miniaturas de PDF: forzar vista de solo primera página
+                const thumbnailUrl = `https://drive.google.com/file/d/${fileId}/preview?rm=minimal&toolbar=0&navpanes=0&scrollbar=0&view=fitH&page=1&zoom=min`;
+                
+                const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                
+                // Intentar obtener el nombre del archivo del parámetro de consulta
+                const nameMatch = url.match(/[?&]name=([^&]+)/);
+                if (nameMatch) {
+                    fileName = decodeURIComponent(nameMatch[1]);
+                } else {
+                    // Si no hay nombre, usar el ID
+                    fileName = `Documento-${fileId.substring(0, 8)}`;
+                }
+                
+                // Detectar tipo de archivo
+                let fileType = "unknown";
+                let icon = "📎";
+                
+                if (url.includes('.pdf') || fileName.toLowerCase().includes('.pdf')) {
+                    fileType = "pdf";
+                    icon = "📕";
+                } else if (fileName.toLowerCase().includes('.doc') || fileName.toLowerCase().includes('.docx')) {
+                    fileType = "word";
+                    icon = "📝";
+                } else if (fileName.toLowerCase().match(/\.(jpg|jpeg|png|gif|bmp)$/)) {
+                    fileType = "image";
+                    icon = "🖼️";
+                }
+                
+                return {
+                    id: fileId,
+                    originalUrl: url,
+                    previewUrl: previewUrl,
+                    thumbnailUrl: thumbnailUrl,
+                    downloadUrl: downloadUrl,
+                    fileName: fileName,
+                    fileType: fileType,
+                    icon: icon,
+                    dateAdded: new Date().toLocaleDateString('es-ES')
+                };
+            } catch (error) {
+                return { error: "URL inválida" };
+            }
+        }
+
+        // Función para agregar enlace de Google Drive
+        function addGoogleDriveUrl(section) {
+            const urlInput = document.getElementById(`url${section}`);
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert("Por favor, ingresa un enlace de Google Drive");
+                return;
+            }
+            
+            if (!url.includes('drive.google.com')) {
+                alert("Por favor, ingresa un enlace válido de Google Drive");
+                return;
+            }
+            
+            const driveInfo = extractDriveInfo(url);
+            
+            if (driveInfo.error) {
+                alert(driveInfo.error);
+                return;
+            }
+            
+            // Agregar a la lista de enlaces
+            driveLinks[section].push(driveInfo);
+            
+            // Actualizar la interfaz
+            updateUrlList(section);
+            updateThumbnails(section);
+            updateDocCount(section);
+            
+            // Limpiar el campo de entrada
+            urlInput.value = '';
+            
+            // Ocultar el campo de entrada
+            document.getElementById(`urlInput${section}`).style.display = 'none';
+            
+            // Guardar en localStorage
+            saveToLocalStorage();
+        }
+
+        // Función para actualizar el contador de documentos
+        function updateDocCount(section) {
+            const countElement = document.getElementById(`count${section}`);
+            countElement.textContent = driveLinks[section].length;
+        }
+
+        // Función para actualizar la lista de URLs
+        function updateUrlList(section) {
+            const urlList = document.getElementById(`urlList${section}`);
+            const links = driveLinks[section];
+            
+            if (links.length === 0) {
+                urlList.innerHTML = '<p style="text-align: center; color: #666;">No hay enlaces agregados</p>';
+                return;
+            }
+            
+            let html = '<h5>Enlaces agregados:</h5>';
+            
+            links.forEach((link, index) => {
+                html += `
+                    <div class="url-item">
+                        <div class="url-name">
+                            <strong>${link.fileName}</strong><br>
+                            <small>Agregado: ${link.dateAdded} | ID: ${link.id.substring(0, 12)}...</small>
+                        </div>
+                        <div class="url-actions">
+                            <button class="url-delete-btn" onclick="deleteDriveLink(${section}, ${index})">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            urlList.innerHTML = html;
+        }
+
+        // Función para eliminar un enlace de Google Drive
+        function deleteDriveLink(section, index) {
+            if (confirm("¿Estás seguro de que quieres eliminar este documento?")) {
+                driveLinks[section].splice(index, 1);
+                updateUrlList(section);
+                updateThumbnails(section);
+                updateDocCount(section);
+                saveToLocalStorage();
+            }
+        }
+
+        // Función para crear miniaturas de documentos
+        function updateThumbnails(section) {
+            const thumbnailContainer = document.getElementById(`thumbnails${section}`);
+            const links = driveLinks[section];
+            
+            thumbnailContainer.innerHTML = '';
+            
+            if (links.length === 0) {
+                thumbnailContainer.innerHTML = `
+                    <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📂</div>
+                        <h3>No hay documentos</h3>
+                        <p>Agrega documentos desde Google Drive para ver las miniaturas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            links.forEach((link, index) => {
+                const thumbnailItem = document.createElement('div');
+                thumbnailItem.className = 'thumbnail-item';
+                
+                // Contenedor de vista previa
+                const thumbnailPreview = document.createElement('div');
+                thumbnailPreview.className = 'thumbnail-preview';
+                
+                if (link.fileType === "pdf") {
+                    // Para PDFs, mostrar miniaturas con iframe configurado para primera página
+                    const iframe = document.createElement('iframe');
+                    iframe.className = 'thumbnail-iframe';
+                    
+                    // Añadir parámetros específicos para mostrar solo primera página en miniatura
+                    const thumbnailWithFirstPage = link.thumbnailUrl;
+                    
+                    iframe.src = thumbnailWithFirstPage;
+                    iframe.loading = 'lazy';
+                    
+                    // Añadir estilos adicionales para asegurar que muestre solo primera página
+                    iframe.style.objectFit = 'cover';
+                    iframe.style.pointerEvents = 'none';
+                    
+                    thumbnailPreview.appendChild(iframe);
+                } else {
+                    // Para otros tipos, mostrar icono
+                    const icon = document.createElement('div');
+                    icon.className = 'thumbnail-icon';
+                    icon.innerHTML = link.icon;
+                    thumbnailPreview.appendChild(icon);
+                }
+                
+                // Información del documento
+                const thumbnailInfo = document.createElement('div');
+                thumbnailInfo.className = 'thumbnail-info';
+                
+                const title = document.createElement('div');
+                title.className = 'thumbnail-title';
+                title.textContent = link.fileName;
+                
+                // Acciones
+                const actions = document.createElement('div');
+                actions.className = 'thumbnail-actions';
+                
+                const viewBtn = document.createElement('button');
+                viewBtn.className = 'thumbnail-btn thumbnail-view-btn';
+                viewBtn.textContent = 'Ampliar';
+                viewBtn.onclick = () => openPreviewModal(link.previewUrl, link.fileName, 'google-drive');
+                
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'thumbnail-btn thumbnail-download-btn';
+                downloadBtn.textContent = 'Descargar';
+                downloadBtn.onclick = () => window.open(link.downloadUrl, '_blank');
+                
+                actions.appendChild(viewBtn);
+                actions.appendChild(downloadBtn);
+                
+                thumbnailInfo.appendChild(title);
+                thumbnailInfo.appendChild(actions);
+                
+                thumbnailItem.appendChild(thumbnailPreview);
+                thumbnailItem.appendChild(thumbnailInfo);
+                thumbnailContainer.appendChild(thumbnailItem);
+            });
+        }
+
+        // Función para mostrar/ocultar la vista previa de miniaturas
+        function toggleFileList(section) {
+            const fileList = document.getElementById(`list${section}`);
+            const urlList = document.getElementById(`urlList${section}`);
+            
+            if (fileList.style.display === 'block') {
+                fileList.style.display = 'none';
+                urlList.style.display = 'none';
+            } else {
+                fileList.style.display = 'block';
+                urlList.style.display = 'block';
+                updateThumbnails(section);
+            }
+        }
+
+        // Función para abrir el modal de vista previa
+        function openPreviewModal(url, fileName, fileType) {
+            const modal = document.getElementById('previewModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const previewFrame = document.getElementById('previewFrame');
+            const previewMessage = document.getElementById('previewMessage');
+            
+            modalTitle.textContent = `Vista Previa: ${fileName || 'Documento de Google Drive'}`;
+            
+            if (fileType === 'google-drive') {
+                previewFrame.style.display = 'block';
+                previewMessage.style.display = 'none';
+                previewFrame.src = url;
+            } else {
+                previewFrame.style.display = 'none';
+                previewMessage.style.display = 'block';
+                previewMessage.innerHTML = `
+                    <i>⚠️</i>
+                    <h3>Formato no compatible</h3>
+                    <p>Esta función solo es compatible con enlaces de Google Drive.</p>
+                `;
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        // Guardar datos en localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('drivePortfolioData', JSON.stringify(driveLinks));
+        }
+
+        // Cargar datos al iniciar
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('drivePortfolioData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    Object.keys(parsedData).forEach(section => {
+                        const sectionNum = parseInt(section);
+                        if (driveLinks.hasOwnProperty(sectionNum)) {
+                            driveLinks[sectionNum] = parsedData[section] || [];
+                            updateDocCount(sectionNum);
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error al cargar datos:', error);
+                }
+            }
+        }
+
+        // Inicializar contadores
+        function initializeCounters() {
+            for (let section = 1; section <= 9; section++) {
+                if (section !== 5) { // Saltar sección 5 que no existe
+                    updateDocCount(section);
+                }
+            }
+        }
+
+        // Cerrar modal al hacer clic en la X
+        document.querySelector('.close-btn').onclick = function() {
+            document.getElementById('previewModal').style.display = 'none';
+            document.getElementById('previewFrame').src = '';
+        }
+
+        // Cerrar modal al hacer clic fuera del contenido
+        window.onclick = function(event) {
+            const modal = document.getElementById('previewModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                document.getElementById('previewFrame').src = '';
+            }
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromLocalStorage();
+            initializeCounters();
+            
+            // Guardar datos antes de cerrar la página
+            window.addEventListener('beforeunload', saveToLocalStorage);
+        });
+    </script>
+</body>
+</html>
